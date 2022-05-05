@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Candidate extends Model
 {
     use HasFactory;
+
+    public function companiesContacted() {
+        return $this->belongsToMany(Company::class);
+    }
 }
