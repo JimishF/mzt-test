@@ -17,8 +17,15 @@ class CandidateController extends Controller
 
     public function index()
     {
-        $candidates = Candidate::all();
-        $coins = Company::find(1)->coins;
+        $company = Company::find(1);
+
+        $coins = $company->wallet->coins;
+        $candidates = Candidate::select('candidates.*', 'company_candidates.status')
+            ->leftJoin('company_candidates', 'candidates.id', 'company_candidates.candidate_id')
+            ->whereNull('company_id')
+            ->orWhere('company_id', $company->id)
+            ->get();
+
         return view('candidates.index', compact('candidates', 'coins'));
     }
 
@@ -27,7 +34,7 @@ class CandidateController extends Controller
         //@todo get company from auth user
         $company = Company::find(1);
 
-        return $this->candidate->hire($candidate, $company);
+        return $this->candidate->contact($candidate, $company);
     }
 
     public function hire(Candidate $candidate)

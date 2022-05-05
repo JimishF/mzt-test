@@ -10,7 +10,7 @@ class Company extends Model
     use HasFactory;
 
     public function candidates() {
-        return $this->belongsToMany(Candidate::class);
+        return $this->belongsToMany(Candidate::class, 'company_candidates')->withTimestamps();
     }
 
     public function wallet() {

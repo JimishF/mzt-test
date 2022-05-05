@@ -17,7 +17,6 @@ class WalletFactory extends Factory
     public function definition()
     {
         return [
-            'coins' => 20,
             'company_id' => 1,
         ];
     }

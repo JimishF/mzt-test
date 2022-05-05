@@ -1,29 +1,66 @@
 <?php
-namespace  App\Http\Repositories;
+
+namespace App\Http\Repositories;
 
 use App\Models\Candidate;
 use App\Models\Company;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
-class CandidateRepository {
-     public function contact(Candidate $candidate, Company $company)
+class CandidateRepository
+{
+    public function contact(Candidate $candidate, Company $company)
     {
+        DB::beginTransaction();
+        $amount = config('wallet.charges.contact-candidate');
+
+        if ($company->wallet->coins < $amount || $candidate->isContactedBy($company)) {
+//            @todo construct response
+            abort(400);
+        }
+
+
+        $candidate->companiesContacted()
+            ->syncWithPivotValues([$company->id], ['status' => 'contacted'], false);
+
+
+        $transaction = new Transaction([
+            'type' => 'withdraw',
+            'transaction_id' => Str::uuid(),
+            'amount' => $amount,
+            'meta' => ['message' => 'Candidate Contacted', 'candidate_id' => $candidate->id]
+        ]);
+
+        $company->wallet->transactions()->save($transaction);
+
         // @todo
-        // has enough balance
-        // if candidate is not already contacted
         // dispatch Job => contact email -> aftercommit
-        // add debit entry in transactions table
-        // debit - 5 from balance
-        // if new balance != balance - 5  rollback
+        DB::commit();
+        return [];
+
     }
 
     public function hire(Candidate $candidate, Company $company)
     {
+        if (!$candidate->canBeHiredBy($company)) {
+//            @todo construct response
+            abort(400);
+        }
+        DB::beginTransaction();
+
+        $amount = config('wallet.charges.contact-candidate');
+        $company->wallet->transaction()->create([
+            'type' => 'deposit',
+            'amount' => $amount,
+            'meta' => ['message' => 'Candidate Hired', 'candidate_id' => $candidate->id]
+        ]);
+
         // @todo
-        // if candidate is already contacted by company
-        // if candidate is not already hired
         // dispatch Job => Hired email -> aftercommit
-        // add  credit entry in transactions table
-        // credit +5 to balance
-        // if new balance != balance+5  rollback
+
+        DB::commit();
+        return [];
     }
+
 }
