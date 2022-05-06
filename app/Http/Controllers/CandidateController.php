@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Repositories\CandidateRepository;
+use Exception;
+use App\Http\Services\CandidateService;
 use App\Models\Candidate;
 use App\Models\Company;
 
 class CandidateController extends Controller
 {
-    protected CandidateRepository $candidate;
+    protected CandidateService $candidateService;
 
-    public function __construct(CandidateRepository $candidateRepository)
+    public function __construct(CandidateService $candidateService)
     {
-        $this->candidate = $candidateRepository;
+        $this->candidateService = $candidateService;
     }
 
     public function index()
@@ -33,15 +34,24 @@ class CandidateController extends Controller
     {
         //@todo get company from auth user
         $company = Company::find(1);
-
-        return $this->candidate->contact($candidate, $company);
+        try {
+            $this->candidateService->contact($candidate, $company);
+            return response()->json(['message' => 'Candidate has been contacted.']);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     public function hire(Candidate $candidate)
     {
         //@todo get company from auth user
         $company = Company::find(1);
+        try {
+            $this->candidateService->hire($candidate, $company);
+            return response()->json(['message' => 'Candidate has been hired.']);
 
-        return $this->candidate->hire($candidate, $company);
+        } catch (Exception  $e) {
+            return response()->json(['message' => 'Something went wrong'], 422);
+        }
     }
 }

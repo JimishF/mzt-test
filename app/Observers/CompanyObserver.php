@@ -18,17 +18,19 @@ class CompanyObserver
      */
     public function created(Company $company)
     {
-
+        $company->wallet()->save(new Wallet(['coins' => 0]));
         DB::transaction(function () use ($company) {
-            $company->wallet()->save(new Wallet());
+
+            $credits = config('wallet.initial-credits.company');
             $transaction = new Transaction([
                 'type' => 'deposit',
                 'transaction_id' => Str::uuid(),
-                'amount' => config('wallet.initial-credits.company'),
+                'amount' => $credits,
                 'meta' => ['message' => 'Initial Credit']
             ]);
 
             $company->wallet->transactions()->save($transaction);
+            $company->wallet->increment('coins', $credits);
         });
     }
 
