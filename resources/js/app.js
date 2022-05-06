@@ -9,9 +9,13 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 
 import VueRouter from 'vue-router'
+import Vuex from 'vuex'
+
 import routes from './routes'
+import storeConfig from './store/index'
 
 Vue.use(VueRouter)
+Vue.use(Vuex);
 
 
 /**
@@ -37,11 +41,13 @@ Vue.component('App', require('./components/App').default);
 
 
 const router = new VueRouter({
-  mode:'history',
+  mode: 'history',
   routes
 })
 
+const store = new Vuex.Store(storeConfig);
 const app = new Vue({
   el: '#app',
   router,
+  store,
 });

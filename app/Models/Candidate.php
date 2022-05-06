@@ -15,7 +15,7 @@ class Candidate extends Model
 
     public function companiesContacted()
     {
-        return $this->belongsToMany(Company::class, 'company_candidates')->withTimestamps();;
+        return $this->belongsToMany(Company::class, 'company_candidates')->withTimestamps();
     }
 
     public function isContactedBy(Company $company)
@@ -25,7 +25,7 @@ class Candidate extends Model
 
     public function canBeHiredBy(Company $company)
     {
-        $company = $this->companiesContacted()->where('company_id', $company->id)->first();
+        $company = $this->companiesContacted()->where('company_id', $company->id)->withPivot('status')->first();
         return $company && $company->pivot->status === 'contacted';
     }
 }

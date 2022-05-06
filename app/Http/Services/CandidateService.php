@@ -11,7 +11,9 @@ use Illuminate\Support\Str;
 
 class CandidateService
 {
-    public function listFor($company) {
+
+    public function listFor($company)
+    {
         $candidates = Candidate::select('candidates.*', 'company_candidates.status')
             ->leftJoin('company_candidates', 'candidates.id', 'company_candidates.candidate_id')
             ->whereNull('company_id')
@@ -20,6 +22,7 @@ class CandidateService
 
         return $candidates;
     }
+
     public function contact(Candidate $candidate, Company $company)
     {
         DB::beginTransaction();
@@ -27,13 +30,11 @@ class CandidateService
             $amount = config('wallet.charges.contact-candidate');
 
             if ($company->wallet->coins < $amount) {
-                throw new Exception('Insufficient coins to hire candidate. Minimum coins required '.$amount);
+                throw new Exception('Insufficient coins to hire candidate. Minimum coins required ' . $amount);
             }
             if ($candidate->isContactedBy($company)) {
                 throw new Exception('Candidate has already been contacted');
             }
-            $candidate->companiesContacted()
-                ->syncWithPivotValues([$company->id], ['status' => 'contacted'], false);
 
             $transaction = new Transaction([
                 'type' => 'withdraw',
@@ -46,6 +47,10 @@ class CandidateService
 
             $company->wallet->where("coins", ">=", $amount)
                 ->decrement('coins', $amount);
+
+//            $candidate->companiesContacted()
+//                ->syncWithPivotValues([$company->id], ['status' => 'contacted'], false);
+            $this->changeCandidateStatus($candidate->id, $company->id, 'hired');
 
             // @todo
             // dispatch Job => contact email -> aftercommit
@@ -76,12 +81,23 @@ class CandidateService
             $company->wallet->transactions()->save($transaction);
             $company->wallet->increment('coins', $amount);
 
+
+            $this->changeCandidateStatus($candidate->id, $company->id, 'hired');
             // @todo
             // dispatch Job => Hired email -> aftercommit
         } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
+
+
     }
 
+    private function changeCandidateStatus($candidate_id, $company_id, $newStatus)
+    {
+        return DB::table('company_candidates')->where([
+            'candidate_id' => $candidate_id,
+            'company_id' => $company_id,
+        ])->update(['status' => $newStatus]);
+    }
 }
