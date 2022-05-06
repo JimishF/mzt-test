@@ -1,52 +1,35 @@
 <template>
   <div>
-    <div class="p-10">
+    <header>
       <h1 class="text-4xl font-bold">Candidates</h1>
-    </div>
+    </header>
     <div class="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-5">
-      <div v-for="candidate in candidates" class="rounded overflow-hidden shadow-lg">
-        <img class="w-full" src="/avatar.png" alt="">
-        <div class="px-6 py-4">
-          <div class="font-bold text-xl mb-2">{{ candidate.name }}</div>
-          <p class="text-gray-700 text-base">{{ candidate.description }}</p>
-        </div>
-        <div class="px-6 pt-4 pb-2"><span v-for="strength in JSON.parse(candidate.strengths)"
-                                          class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">{{ strength }}</span>
-        </div>
-        <div class="p-6 float-right">
-          <button v-if="canContact(candidate)"
-              @click="contact(candidate.id)"
-              class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-            Contact
-          </button>
-          <button
-              v-if="canHire(candidate)"
-              @click="hire(candidate.id)"
-              class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 hover:bg-teal-100 rounded shadow">
-            Hire
-          </button>
-        </div>
+      <div  v-for="candidate in candidates">
+        <candidate-card :candidate="candidate"></candidate-card>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import Button from "./common/Button";
+  import CandidateCard from './CandidateCard';
+
   export default {
-    props: ['candidates'],
-    methods: {
-      canContact(candidate){
-          return !candidate.status
-      },
-      canHire(candidate){
-        return candidate.status === 'contacted'
-      },
-      contact(candidate_id) {
-        axios.post(`/candidate/contact/${candidate_id}`)
-      },
-      hire(candidate_id) {
-        axios.post(`/candidate/hire/${candidate_id}`)
-      }
+    components: {Button, CandidateCard},
+    data() {
+      return ({
+        candidates: [],
+      })
+    },
+    methods:{
+        async fetchCandidates(){
+          const response = await axios.get('/api/candidate/list');
+          this.candidates = response.data;
+        }
+    },
+    async mounted() {
+      await this.fetchCandidates()
     }
   }
 </script>

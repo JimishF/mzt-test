@@ -11,6 +11,15 @@ use Illuminate\Support\Str;
 
 class CandidateService
 {
+    public function listFor($company) {
+        $candidates = Candidate::select('candidates.*', 'company_candidates.status')
+            ->leftJoin('company_candidates', 'candidates.id', 'company_candidates.candidate_id')
+            ->whereNull('company_id')
+            ->orWhere('company_id', $company->id)
+            ->get();
+
+        return $candidates;
+    }
     public function contact(Candidate $candidate, Company $company)
     {
         DB::beginTransaction();

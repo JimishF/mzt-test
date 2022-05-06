@@ -7,5 +7,11 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [],
+   variants: {
+    opacity: ({ after }) => after(['disabled'])
+  },
+  plugins: [
+    require('@tailwindcss/aspect-ratio'),
+    require('@tailwindcss/line-clamp'),
+  ],
 }

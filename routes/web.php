@@ -14,14 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('homepage');
-});
-
-Route::prefix('candidate')
-    ->controller(CandidateController::class)
-    ->group(function () {
-        Route::get('list', 'index');
-        Route::post('contact/{candidate}', 'contact');
-        Route::post('hire/{candidate}', 'hire');
-    });
+Route::view('/{any}', 'homepage')->where('any', '^(?!api).*$');

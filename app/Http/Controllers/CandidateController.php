@@ -19,15 +19,7 @@ class CandidateController extends Controller
     public function index()
     {
         $company = Company::find(1);
-
-        $coins = $company->wallet->coins;
-        $candidates = Candidate::select('candidates.*', 'company_candidates.status')
-            ->leftJoin('company_candidates', 'candidates.id', 'company_candidates.candidate_id')
-            ->whereNull('company_id')
-            ->orWhere('company_id', $company->id)
-            ->get();
-
-        return view('candidates.index', compact('candidates', 'coins'));
+        return $this->candidateService->listFor($company);
     }
 
     public function contact(Candidate $candidate)

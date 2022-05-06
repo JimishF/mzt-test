@@ -9,14 +9,20 @@ class Candidate extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'strengths' => 'json'
+    ];
+
     public function companiesContacted()
     {
         return $this->belongsToMany(Company::class, 'company_candidates')->withTimestamps();;
     }
 
-    public function isContactedBy(Company $company) {
+    public function isContactedBy(Company $company)
+    {
         return $this->companiesContacted()->where('company_id', $company->id)->exists();
     }
+
     public function canBeHiredBy(Company $company)
     {
         $company = $this->companiesContacted()->where('company_id', $company->id)->first();
