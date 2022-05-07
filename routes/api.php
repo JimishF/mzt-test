@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\WalletController;
 
 Route::prefix('candidate')
     ->controller(CandidateController::class)
@@ -22,3 +23,5 @@ Route::prefix('candidate')
         Route::post('contact/{candidate}', 'contact');
         Route::post('hire/{candidate}', 'hire');
     });
+
+Route::get('wallet', [WalletController::class, 'show']);

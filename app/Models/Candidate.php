@@ -13,19 +13,30 @@ class Candidate extends Model
         'strengths' => 'json'
     ];
 
-    public function companiesContacted()
+    public function companiesPivot()
+    {
+        return $this->hasMany(CompanyCandidate::class);
+    }
+
+    public function companies()
     {
         return $this->belongsToMany(Company::class, 'company_candidates')->withTimestamps();
     }
 
     public function isContactedBy(Company $company)
     {
-        return $this->companiesContacted()->where('company_id', $company->id)->exists();
+        return $this->companiesPivot()
+            ->where('company_id', $company->id)->exists();
+    }
+
+    public function hiredBy()
+    {
+        return $this->companiesPivot()->where('status', 'hired')->first();
     }
 
     public function canBeHiredBy(Company $company)
     {
-        $company = $this->companiesContacted()->where('company_id', $company->id)->withPivot('status')->first();
-        return $company && $company->pivot->status === 'contacted';
+        $alreadyHiredBy = $this->hiredBy();
+        return !$alreadyHiredBy && $this->isContactedBy($company);
     }
 }
