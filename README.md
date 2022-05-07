@@ -1,7 +1,38 @@
 
 # MyZenTeam code test assignment
 
-## Description
+#### Setup
+Install dependencies.
+```shell
+composer install 
+npm ci
+```
+Copy `.env.example` to `.env`.
+Create a database configure connection variables in env.
+
+```shell
+php artisan key:generate
+php artisan migrate
+```
+
+#### Start Server
+
+```shell
+npm run watch # for dev 
+```
+```shell
+php artisan serve # start the server
+```
+Open http://localhost:8000
+
+
+```shell
+php artisan serve # start the server
+```
+
+---
+
+## Original Description
 
 In this test assignment we have prepared a hiring platform where job seekers (candidates) can be found and get contacted and hired from companies' hiring managers.
 

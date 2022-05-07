@@ -34,15 +34,16 @@
                   strength
                 }}</span>
       </div>
+
       <Button
-          class="w-full"
+          class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:bg-blue-700"
           :disabled="isContacting"
           v-if="canContact"
           @click="contact()">
         {{ isContacting ? "Contacting.." : "Contact" }}
       </Button>
       <Button
-          class="w-full bg-teal-700 hover:bg-teal-800 active:bg-teal-900 focus:bg-teal-900"
+          class="w-full text-white bg-teal-700 hover:bg-teal-800 active:bg-teal-900 focus:bg-teal-900"
           :disabled="isHiring"
           v-if="canHire"
           @click="hire()">
