@@ -14,6 +14,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Exception;
 
 class SendContactedEmailJob implements ShouldQueue
 {
@@ -41,6 +42,10 @@ class SendContactedEmailJob implements ShouldQueue
     public function handle()
     {
         $mail = new CandidateContactedMail($this->company);
-        Mail::to($this->candidate->email)->send($mail);
+        try {
+            Mail::to($this->candidate->email)->send($mail);
+        } catch (Exception $e) {
+            throw  new Exception('Failed to send email to candidate');
+        }
     }
 }
