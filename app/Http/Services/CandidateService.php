@@ -14,7 +14,7 @@ use Ramsey\Collection\Collection;
 
 class CandidateService
 {
-    public function listFor($company)
+    public function listFor($company): array
     {
         $candidates = Candidate::with('companiesPivot')->get();
         $candidates = $candidates->filter(function ($candidate) use ($company) {
@@ -30,7 +30,7 @@ class CandidateService
             return true;
         });
 
-        return $candidates->values();
+        return $candidates->values()->toArray();
     }
 
     /**
