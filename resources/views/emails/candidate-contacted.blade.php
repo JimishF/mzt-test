@@ -1,0 +1,1 @@
+<p>{{ $company->name }} has contatced you.</p>

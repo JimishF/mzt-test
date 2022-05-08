@@ -1,40 +1,55 @@
-
 # MyZenTeam code test assignment
 
+#### Prerequisites
+
+- php ^8
+- node ^16
+
 #### Setup
+
 Install dependencies.
+
 ```shell
 composer install 
 npm ci
 ```
-Copy `.env.example` to `.env`.
-Create a database configure connection variables in env.
+
+- Copy `.env.example` to `.env`.
+- Create a database and configure connection variables in env.
+- Setup mail config in `.env`  (https://mailtrap.io/blog/send-email-in-laravel)
 
 ```shell
+# generate application key
 php artisan key:generate
+
+# migrate the database
 php artisan migrate
+
+# seed candidates and companies 
+php artisan db:seed
 ```
 
 #### Start Server
 
 ```shell
-npm run watch # for dev 
+npm run dev # for one time compilation of vue resouces 
+# or
+npm run watch # for live recompilation
 ```
+
 ```shell
 php artisan serve # start the server
 ```
+
 Open http://localhost:8000
 
-
-```shell
-php artisan serve # start the server
-```
 
 ---
 
 ## Original Description
 
-In this test assignment we have prepared a hiring platform where job seekers (candidates) can be found and get contacted and hired from companies' hiring managers.
+In this test assignment we have prepared a hiring platform where job seekers (candidates) can be found and get contacted
+and hired from companies' hiring managers.
 
 The platform is free for job seekers, but not for companies.
 The billing is handled by using a wallet. At the start each company has a wallet with 20 coins of credit.
@@ -43,14 +58,18 @@ These coins can be used to contact candidates and contacting a candidate will co
 On the candidates' list there is a button `Contact` and this is where a company can contact a candidate.
 Similarly, the button `Hire` is where a company can hire a candidate.
 
-One of the tasks for this test assignment is to implement the `Contact a candidate` feature which should consist of the following:
-when a company contacts a candidate, we should send an email to that candidate and charge the company 5 coins from its wallet.
+One of the tasks for this test assignment is to implement the `Contact a candidate` feature which should consist of the
+following:
+when a company contacts a candidate, we should send an email to that candidate and charge the company 5 coins from its
+wallet.
 
 The other feature that is part of this test assignment is to `hire a candidate`.
-When a company hires a candidate we should mark the candidate as `hired`, put back 5 coins in the wallet of the company, and send an email to the candidate to tell them they were hired.
+When a company hires a candidate we should mark the candidate as `hired`, put back 5 coins in the wallet of the company,
+and send an email to the candidate to tell them they were hired.
 A company can hire only candidates that they have contacted before.
 
-Aside from the features, we're aware that this app is far from perfect, so we'd like you to fix/improve anything that you find to be wrong or needs improvement (code, architecture, naming, readability, robustness, etc.).
+Aside from the features, we're aware that this app is far from perfect, so we'd like you to fix/improve anything that
+you find to be wrong or needs improvement (code, architecture, naming, readability, robustness, etc.).
 
 While doing this test assignment, please pay attention to these aspects:
 
@@ -61,13 +80,15 @@ While doing this test assignment, please pay attention to these aspects:
 - Logic - pay attention to the constraints throughout the test assignment
 
 ## Notes
+
 - Authentication **IS NOT** in the scope of this assignment.
 - The list of candidates, the company and the wallet are predefined and there is no need to create new ones.
 - The emails that should be sent to the candidates can consist of only text, no design is needed.
 
-
-_**This app was created only for the purpose of the test assignment and code quality in this repository DOES NOT represent code quality in MyZenTeam.**_
+_**This app was created only for the purpose of the test assignment and code quality in this repository DOES NOT
+represent code quality in MyZenTeam.**_
 
 ## Get started
 
-Use this repository as your starting point, but **DO NOT** fork it. Create a public repository on GitHub for your application source code, push it and send the link to us.
+Use this repository as your starting point, but **DO NOT** fork it. Create a public repository on GitHub for your
+application source code, push it and send the link to us.

@@ -2,17 +2,19 @@
 
 namespace App\Http\Services;
 
+use App\Jobs\SendContactedEmailJob;
+use App\Mail\CandidateContactedMail;
 use Exception;
 use App\Models\Candidate;
 use App\Models\Company;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Ramsey\Collection\Collection;
 
 class CandidateService
 {
-
-    public function listFor($company)
+    public function listFor($company): Collection
     {
         $candidates = Candidate::with('companiesPivot')->get();
         $candidates = $candidates->filter(function ($candidate) use ($company) {
@@ -30,6 +32,9 @@ class CandidateService
         return $candidates->values();
     }
 
+    /**
+     * @throws Exception
+     */
     public function contact(Candidate $candidate, Company $company)
     {
         DB::beginTransaction();
@@ -56,8 +61,12 @@ class CandidateService
 
             $candidate->companies()
                 ->syncWithPivotValues([$company->id], ['status' => 'contacted'], false);
+
             // @todo
             // dispatch Job => contact email -> aftercommit
+
+            SendContactedEmailJob::dispatch($candidate, $company)->afterCommit();
+
             DB::commit();
 
         } catch (Exception $e) {
@@ -66,6 +75,9 @@ class CandidateService
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function hire(Candidate $candidate, Company $company)
     {
 
