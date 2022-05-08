@@ -12,7 +12,7 @@ import VueRouter from 'vue-router'
 import Vuex from 'vuex'
 
 import routes from './routes'
-import storeConfig from './store/index'
+import storeConfig from './store'
 
 Vue.use(VueRouter)
 Vue.use(Vuex);
