@@ -19,7 +19,7 @@
         </svg>
 
 
-        <span v-if="!coins" class="transition-all animate-pulse w-24 bg-teal-700 h-6 rounded-md "></span>
+        <span v-if="coins === null" class="transition-all animate-pulse w-24 bg-teal-700 h-6 rounded-md "></span>
         <span v-else> {{ coins }} Coins </span>
       </div>
     </nav>

@@ -2,6 +2,9 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\CandidateContactingException;
+use App\Exceptions\CandidateHiringException;
+use App\Exceptions\InsufficientCoinsException;
 use App\Jobs\SendContactedEmailJob;
 use App\Mail\CandidateContactedMail;
 use Exception;
@@ -14,7 +17,7 @@ use Ramsey\Collection\Collection;
 
 class CandidateService
 {
-    public function listFor($company): array
+    public function listFor($company)
     {
         $candidates = Candidate::with('companiesPivot')->get();
         $candidates = $candidates->filter(function ($candidate) use ($company) {
@@ -30,7 +33,7 @@ class CandidateService
             return true;
         });
 
-        return $candidates->values()->toArray();
+        return $candidates->values();
     }
 
     /**
@@ -42,10 +45,10 @@ class CandidateService
         try {
             $amount = config('wallet.charges.candidate');
             if ($company->wallet->coins < $amount) {
-                throw new Exception('Insufficient coins to hire candidate. Minimum coins required ' . $amount);
+                throw new InsufficientCoinsException("Insufficient coins to contact a candidate");
             }
             if ($candidate->isContactedBy($company)) {
-                throw new Exception('Candidate has already been contacted');
+                throw new CandidateContactingException('Candidate has already been contacted');
             }
 
             $transaction = new Transaction([
@@ -83,7 +86,7 @@ class CandidateService
     {
 
         if (!$candidate->canBeHiredBy($company)) {
-            throw new Exception('Unable to hire candidate.');
+            throw new CandidateHiringException();
         }
 
         DB::beginTransaction();
@@ -107,7 +110,7 @@ class CandidateService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            throw $e;
+            throw new CandidateHiringException();
         }
 
     }

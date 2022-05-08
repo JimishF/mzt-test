@@ -43,7 +43,7 @@ class CandidateController extends Controller
             return response()->json(['message' => 'Candidate has been hired.']);
 
         } catch (Exception  $e) {
-            return response()->json(['message' => 'Something went wrong'], 422);
+            return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 }
