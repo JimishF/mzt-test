@@ -66,9 +66,6 @@ class CandidateService
             $candidate->companies()
                 ->syncWithPivotValues([$company->id], ['status' => 'contacted'], false);
 
-            // @todo
-            // dispatch Job => contact email -> aftercommit
-
             SendContactedEmailJob::dispatch($candidate, $company)->afterCommit();
 
             DB::commit();
@@ -104,6 +101,7 @@ class CandidateService
 
             $candidate->companies()
                 ->syncWithPivotValues([$company->id], ['status' => 'hired'], false);
+
             // @todo
             // dispatch Job => Hired email -> aftercommit
 
